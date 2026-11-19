@@ -1,51 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
 
 function App() {
-  const [employeeName, setEmployeeName] = useState('');
-  const [hours, setHours] = useState('');
-  const [records, setRecords] = useState([]);
-
-  const submitTimesheet = async () => {
-    await axios.post('http://localhost:5000/api/timesheet', {
-      employeeName,
-      hours,
-    });
-    setEmployeeName('');
-    setHours('');
-    fetchRecords();
-  };
-
-  const fetchRecords = async () => {
-    const response = await axios.get('http://localhost:5000/api/timesheet');
-    setRecords(response.data);
-  };
+  const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
-    fetchRecords();
+    fetch("/api/timesheet")
+      .then((res) => res.json())
+      .then((data) => setMessage(data.message))
+      .catch(() => setMessage("Error connecting to backend"));
   }, []);
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Employee Timesheet</h1>
-      <input
-        value={employeeName}
-        onChange={(e) => setEmployeeName(e.target.value)}
-        placeholder="Employee Name"
-      />
-      <input
-        value={hours}
-        onChange={(e) => setHours(e.target.value)}
-        placeholder="Hours Worked"
-      />
-      <button onClick={submitTimesheet}>Submit</button>
-      <ul>
-        {records.map((r, i) => (
-          <li key={i}>
-            {r.employeeName} - {r.hours} hrs
-          </li>
-        ))}
-      </ul>
+    <div>
+      <h1>Timesheet Frontend (React)</h1>
+      <p>{message}</p>
     </div>
   );
 }
